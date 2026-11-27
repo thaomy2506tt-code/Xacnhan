@@ -50,21 +50,18 @@
 </div>
 
 <script>
-  // CẤU HÌNH: Dán URL Web App của Google Apps Script vào đây
-  const SCRIPT_URL = "https://script.google.com/macros/s/DÁN_MÃ_CỦA_BẠN_VÀO_ĐÂY/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziNvRDfZ1nj6jgZcENmzqcYP6ZVsNHc4W5cjFsggLZoDnR26YuxddLVc2-Tm9JikgP/exec";
 
   async function verifyAccess() {
     const box = document.getElementById("box");
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
 
-    // 1. Chặn ngay nếu truy cập trực tiếp không có token
     if (!token) {
       renderError("Truy cập bị từ chối!", "Bạn chưa vượt qua Link4m hoặc đường dẫn không hợp lệ.");
       return;
     }
 
-    // 2. Xóa token khỏi thanh địa chỉ trình duyệt để người dùng không copy/lưu lại được URL
     window.history.replaceState({}, document.title, window.location.pathname);
 
     try {
