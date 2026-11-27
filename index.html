@@ -50,22 +50,23 @@
 </div>
 
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziNvRDfZ1nj6jgZcENmzqcYP6ZVsNHc4W5cjFsggLZoDnR26YuxddLVc2-Tm9JikgP/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzR-wzBDrEN1cg4wcKQyvHzly8gBtOEv4sLUy_3hue0bOWcRwivBjzS9w58wKkmlk7Y/exec";
 
   async function verifyAccess() {
     const box = document.getElementById("box");
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
+    const ref = urlParams.get("ref") || "";
 
-    if (!token) {
-      renderError("Truy cập bị từ chối!", "Bạn chưa vượt qua Link4m hoặc đường dẫn không hợp lệ.");
+    if (!token || !ref.toLowerCase().includes("link4m")) {
+      renderError("Truy cập bị từ chối!", "Bạn chưa vượt qua Link4m hoặc đang mở thẳng link gốc.");
       return;
     }
 
     window.history.replaceState({}, document.title, window.location.pathname);
 
     try {
-      const response = await fetch(`${SCRIPT_URL}?action=verify&token=${encodeURIComponent(token)}`);
+      const response = await fetch(`${SCRIPT_URL}?action=verify&token=${encodeURIComponent(token)}&ref=${encodeURIComponent(ref)}`);
       const result = await response.json();
 
       if (result.status === "success") {
