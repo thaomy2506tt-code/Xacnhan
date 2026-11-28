@@ -4,148 +4,77 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="origin">
-  <title>Xác Nhận Vượt Link - Script Yuhhna</title>
+  <title>Xác Nhận Vượt Link4m</title>
   <style>
     * { box-sizing: border-box; }
     body {
-      margin: 0;
-      background: #0b0d14;
-      color: #fff;
+      margin: 0; background: #0b0d14; color: #fff;
       font-family: system-ui, -apple-system, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 16px;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 16px;
     }
     .card {
-      background: #131722;
-      border: 2px solid #00f0ff;
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 390px;
-      width: 100%;
-      text-align: center;
+      background: #131722; border: 2px solid #00f0ff; border-radius: 16px;
+      padding: 26px 22px; max-width: 390px; width: 100%; text-align: center;
       box-shadow: 0 0 28px rgba(0, 240, 255, 0.22);
     }
-    h2 { margin: 0 0 8px; color: #00f0ff; font-size: 20px; }
-    .sub { margin: 6px 0; color: #b8d4f0; font-size: 13px; line-height: 1.45; }
-    .err { color: #ff6b6b; font-weight: 700; font-size: 15px; margin: 14px 0 6px; }
-    .keybox {
-      background: #090b10;
-      border: 1.5px dashed #00ff9d;
-      border-radius: 10px;
-      padding: 14px;
-      margin: 16px 0;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: #00ff9d;
-      user-select: all;
-      word-break: break-all;
+    h2 { margin: 0 0 10px; font-size: 20px; }
+    .sub { margin: 6px 0; color: #b8d4f0; font-size: 13.5px; line-height: 1.5; }
+    .badge {
+      display: inline-block; margin-top: 14px; padding: 8px 14px;
+      background: rgba(0, 255, 157, 0.12); border: 1px solid #00ff9d;
+      border-radius: 8px; color: #00ff9d; font-size: 12.5px; font-weight: 600;
     }
-    button {
-      background: linear-gradient(90deg, #00c875, #00a8ff);
-      border: none;
-      border-radius: 10px;
-      color: #fff;
-      font-weight: 700;
-      font-size: 15px;
-      padding: 12px 20px;
-      width: 100%;
-      cursor: pointer;
-    }
-    button:active { transform: scale(0.98); }
-    .note { margin-top: 12px; font-size: 12px; color: #ffd166; }
   </style>
 </head>
 <body>
   <div class="card" id="app">
-    <h2>⏳ ĐANG XÁC MINH LINK4M...</h2>
-    <p class="sub">Vui lòng chờ 1–2 giây để hệ thống tạo mã Key hợp lệ.</p>
+    <h2 style="color:#00f0ff">⏳ ĐANG XÁC NHẬN VƯỢT LINK...</h2>
+    <p class="sub">Vui lòng đợi giây lát để hệ thống kiểm tra phiên truy cập.</p>
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwkFbfgMA6HrLWYPfhDQbk7lC5DYfFj6-fTGxd1udzj1efnmxk4dcfgbu6dXKSU1Q/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzR-wzBDrEN1cg4wcKQyvHzly8gBtOEv4sLUy_3hue0bOWcRwivBjz59w58wKkmlk7Y/exec";
     const app = document.getElementById("app");
 
-    function showDenied(reason) {
+    function showDenied(msg) {
       app.style.borderColor = "#ff4d5a";
       app.innerHTML =
-        '<div class="err">⛔ Truy cập bị từ chối!</div>' +
-        '<p class="sub">' + reason + '</p>' +
-        '<div class="note">Vui lòng quay lại vượt Link4m từ đầu.</div>';
+        '<h2 style="color:#ff6b6b">⛔ Truy cập bị từ chối!</h2>' +
+        '<p class="sub">' + msg + '</p>';
     }
 
-    function copyKey(text) {
-      const btn = document.getElementById("copyBtn");
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          btn.innerText = "✅ ĐÃ SAO CHÉP MÃ KEY!";
-        }).catch(() => fallbackCopy(text, btn));
-      } else {
-        fallbackCopy(text, btn);
-      }
-    }
-
-    function fallbackCopy(text, btn) {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      btn.innerText = "✅ ĐÃ SAO CHÉP MÃ KEY!";
-    }
-
-    (async function init() {
+    (async function verify() {
       const ref = (document.referrer || "").toLowerCase();
-      const isFromLink4m = ref.includes("link4m.net") || ref.includes("link4m.com");
-
-      // Chặn mở thẳng trang GitHub Pages hoặc tải lại trang (F5 mất referrer)
-      if (!isFromLink4m) {
-        showDenied("Bạn đang mở lại link cũ hoặc truy cập thẳng link gốc.");
+      if (!ref.includes("link4m.net") && !ref.includes("link4m.com")) {
+        showDenied("Bạn đang mở lại link cũ hoặc truy cập thẳng link gốc. Vui lòng vượt lại từ đầu qua Link4m.");
         return;
       }
 
-      // Xóa lịch sử điều hướng để bấm Back/Reload không dùng lại được
-      try {
-        history.replaceState(null, "", location.pathname);
-      } catch (e) {}
+      try { history.replaceState(null, "", location.pathname); } catch (e) {}
 
       try {
-        const res = await fetch(APPS_SCRIPT_URL + "?action=create&ref=" + encodeURIComponent(ref), {
-          method: "GET",
-          cache: "no-store"
-        });
-        const data = await res.json();
-
-        if (!data || !data.ok || !data.token) {
-          showDenied((data && data.error) || "Không thể khởi tạo phiên xác nhận.");
+        const r1 = await fetch(APPS_SCRIPT_URL + "?action=create&ref=" + encodeURIComponent(ref), { cache: "no-store" });
+        const d1 = await r1.json();
+        if (!d1 || !d1.ok || !d1.token) {
+          showDenied((d1 && d1.error) || "Không thể tạo phiên xác nhận.");
           return;
         }
 
-        // Đổi token 1 lần (hạn 3 phút) lấy Key ngày
-        const claimRes = await fetch(
-          APPS_SCRIPT_URL + "?action=claim&token=" + encodeURIComponent(data.token),
-          { method: "GET", cache: "no-store" }
-        );
-        const claimData = await claimRes.json();
-
-        if (!claimData || !claimData.ok || !claimData.key) {
-          showDenied((claimData && claimData.error) || "Token đã hết hạn hoặc đã được sử dụng.");
+        const r2 = await fetch(APPS_SCRIPT_URL + "?action=claim&token=" + encodeURIComponent(d1.token), { cache: "no-store" });
+        const d2 = await r2.json();
+        if (!d2 || !d2.ok) {
+          showDenied((d2 && d2.error) || "Phiên xác nhận không hợp lệ hoặc đã dùng.");
           return;
         }
 
         app.style.borderColor = "#00ff9d";
         app.innerHTML =
-          '<h2>🔑 KEY SCRIPT YUHHNA</h2>' +
-          '<p class="sub">Ngày hiệu lực: <b>' + claimData.date + '</b> (Reset lúc 00:00)</p>' +
-          '<div class="keybox" id="k">' + claimData.key + '</div>' +
-          '<button id="copyBtn" onclick="copyKey(\'' + claimData.key + '\')">📋 SAO CHÉP MÃ KEY</button>' +
-          '<div class="note">Token xác nhận chỉ dùng 1 lần. Vui lòng dán Key vào game ngay.</div>';
-      } catch (err) {
-        showDenied("Lỗi kết nối máy chủ xác nhận. Hãy thử lại sau vài giây.");
+          '<h2 style="color:#00ff9d">✅ XÁC NHẬN VƯỢT LINK THÀNH CÔNG!</h2>' +
+          '<p class="sub">Hệ thống đã ghi nhận lượt vượt Link4m hợp lệ của bạn.</p>' +
+          '<div class="badge">🕒 Thời gian: ' + d2.time + '</div>';
+      } catch (e) {
+        showDenied("Lỗi kết nối máy chủ xác nhận. Vui lòng thử lại.");
       }
     })();
   </script>
