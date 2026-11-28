@@ -3,34 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="referrer" content="origin">
   <title>Xác Nhận Vượt Link4m</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; background: #0b0d14; color: #fff;
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      background: #0b0d14; color: #fff;
       font-family: system-ui, -apple-system, sans-serif;
       display: flex; align-items: center; justify-content: center;
-      min-height: 100vh; padding: 16px;
     }
     .card {
       background: #131722; border: 2px solid #00f0ff; border-radius: 16px;
-      padding: 26px 22px; max-width: 390px; width: 100%; text-align: center;
-      box-shadow: 0 0 28px rgba(0, 240, 255, 0.22);
+      padding: 26px 22px; max-width: 380px; width: 90%; text-align: center;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
     }
-    h2 { margin: 0 0 10px; font-size: 20px; }
-    .sub { margin: 6px 0; color: #b8d4f0; font-size: 13.5px; line-height: 1.5; }
+    h2 { margin: 0 0 10px; font-size: 19px; color: #00f0ff; }
+    p { margin: 6px 0; color: #b8d4f0; font-size: 13.5px; line-height: 1.5; }
     .badge {
       display: inline-block; margin-top: 14px; padding: 8px 14px;
       background: rgba(0, 255, 157, 0.12); border: 1px solid #00ff9d;
-      border-radius: 8px; color: #00ff9d; font-size: 12.5px; font-weight: 600;
+      border-radius: 8px; color: #00ff9d; font-size: 12.5px; font-weight: 700;
     }
   </style>
 </head>
 <body>
   <div class="card" id="app">
-    <h2 style="color:#00f0ff">⏳ ĐANG XÁC NHẬN VƯỢT LINK...</h2>
-    <p class="sub">Vui lòng đợi giây lát để hệ thống kiểm tra phiên truy cập.</p>
+    <h2>⏳ ĐANG XÁC NHẬN VƯỢT LINK...</h2>
+    <p>Hệ thống đang kiểm tra phiên truy cập, vui lòng chờ 2 giây...</p>
   </div>
 
   <script>
@@ -41,40 +39,44 @@
       app.style.borderColor = "#ff4d5a";
       app.innerHTML =
         '<h2 style="color:#ff6b6b">⛔ Truy cập bị từ chối!</h2>' +
-        '<p class="sub">' + msg + '</p>';
+        '<p>' + msg + '</p>';
     }
 
     (async function verify() {
       const ref = (document.referrer || "").toLowerCase();
-      if (!ref.includes("link4m.net") && !ref.includes("link4m.com")) {
+      const params = new URLSearchParams(window.location.search);
+      const gateKey = params.get("v");
+
+      try { history.replaceState(null, "", location.pathname); } catch (e) {}
+
+      const isValidEntry = ref.includes("link4m") || gateKey === "yuhhna4m";
+      if (!isValidEntry) {
         showDenied("Bạn đang mở lại link cũ hoặc truy cập thẳng link gốc. Vui lòng vượt lại từ đầu qua Link4m.");
         return;
       }
 
-      try { history.replaceState(null, "", location.pathname); } catch (e) {}
-
       try {
-        const r1 = await fetch(APPS_SCRIPT_URL + "?action=create&ref=" + encodeURIComponent(ref), { cache: "no-store" });
+        const r1 = await fetch(APPS_SCRIPT_URL + "?action=create&ref=link4m", { cache: "no-store" });
         const d1 = await r1.json();
         if (!d1 || !d1.ok || !d1.token) {
-          showDenied((d1 && d1.error) || "Không thể tạo phiên xác nhận.");
+          showDenied((d1 && d1.error) || "Không thể khởi tạo phiên xác nhận.");
           return;
         }
 
         const r2 = await fetch(APPS_SCRIPT_URL + "?action=claim&token=" + encodeURIComponent(d1.token), { cache: "no-store" });
         const d2 = await r2.json();
         if (!d2 || !d2.ok) {
-          showDenied((d2 && d2.error) || "Phiên xác nhận không hợp lệ hoặc đã dùng.");
+          showDenied((d2 && d2.error) || "Phiên xác nhận đã hết hạn hoặc đã dùng.");
           return;
         }
 
         app.style.borderColor = "#00ff9d";
         app.innerHTML =
           '<h2 style="color:#00ff9d">✅ XÁC NHẬN VƯỢT LINK THÀNH CÔNG!</h2>' +
-          '<p class="sub">Hệ thống đã ghi nhận lượt vượt Link4m hợp lệ của bạn.</p>' +
+          '<p>Hệ thống đã ghi nhận lượt vượt Link4m hợp lệ của bạn.</p>' +
           '<div class="badge">🕒 Thời gian: ' + d2.time + '</div>';
-      } catch (e) {
-        showDenied("Lỗi kết nối máy chủ xác nhận. Vui lòng thử lại.");
+      } catch (err) {
+        showDenied("Lỗi kết nối máy chủ Google Apps Script. Vui lòng thử lại.");
       }
     })();
   </script>
